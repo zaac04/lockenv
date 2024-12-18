@@ -13,8 +13,8 @@ NEW_BUILD_NUMBER := $(shell expr $(BUILD_NUMBER) + 1)
 
 install_dep:
 	go install github.com/wailsapp/wails/v2/cmd/wails@latest
-	sudo apt -y install build-essential libgtk-3-dev libwebkit2gtk-4.0-dev pkg-config
-	sudo apt -y install upx-ucl
+	sudo apt-get -y install build-essential libgtk-3-dev libwebkit2gtk-4.0-dev pkg-config
+	sudo apt-get -y install upx-ucl
 
 update_build_number:
 	@echo $(NEW_BUILD_NUMBER) > $(BUILD_FILE)
@@ -30,6 +30,14 @@ buildLinux:
 	upx --best --lzma ./build/linux/${BINARY_NAME}
 	@$(MAKE) update_build_number
 	cp ./build/linux/${BINARY_NAME} .
+
+buildLinuxServer:
+	@$(MAKE) clean
+	go mod tidy
+	cd server && go build  -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ../build/linux/server/${BINARY_NAME}-server
+	# upx --best --lzma ./build/linux/server/${BINARY_NAME}-server
+	@$(MAKE) update_build_number
+	cp ./build/linux/server/${BINARY_NAME}-server . 
 
 buildWindows:
 	@$(MAKE) clean

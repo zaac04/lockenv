@@ -1,10 +1,6 @@
 #!/bin/bash
-url="https://github.com/zaac04/locksmith/releases/download/v1.1/locksmith"
-wget -O locksmith $url
+url="https://github.com/zaac04/lockenv/releases/download/v2.1/lockenv"
+wget -O lockenv $url
 binary_destination_folder="/usr/local/bin"
-sudo cp locksmith $binary_destination_folder
-sudo chmod +x "$binary_destination_folder/locksmith"
-sudo locksmith completion bash >> /etc/bash_completion.d/locksmith.sh
-sudo echo "source /etc/bash_completion.d/locksmith.sh" >> ~/.bashrc
-. ~/.bashrc
-
+sudo cp lockenv $binary_destination_folder
+sudo chmod +x "$binary_destination_folder/lockenv"

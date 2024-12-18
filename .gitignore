@@ -1,7 +1,7 @@
 *.env
 locksmith
 sample.env.locksmith
-lockenv
+lockenv*
 *.exe
 *.locksmith
 *.locksmith.key

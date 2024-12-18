@@ -1,0 +1,114 @@
+name: Build and Release Go Executable
+
+on:
+  release:
+    types:
+      - prereleased
+      - edited
+
+jobs:
+  build:
+    name: Build Go Executables
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04]
+        arch: [amd64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+
+      - name: Install dependencies
+        run: |
+          if [[ "${{ matrix.os }}" == "ubuntu-22.04" ]]; then
+            go install github.com/wailsapp/wails/v2/cmd/wails@latest
+            sudo apt-get -y update
+            sudo apt-get -y install build-essential libgtk-3-dev libwebkit2gtk-4.0-dev pkg-config
+            sudo apt-get -y install upx-ucl
+          fi
+
+      - name: Set environment variables
+        run: |
+          echo "BINARY_NAME=lockenv" >> $GITHUB_ENV
+          echo "EXE_NAME=lockenv.exe" >> $GITHUB_ENV
+          echo "DATE=$(date +'%d %b %Y')" >> $GITHUB_ENV
+          echo "Version=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+          echo "Maintainer=${{ github.repository_owner }}" >> $GITHUB_ENV
+          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Build for Linux
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          mkdir -p build/linux
+          go mod tidy
+          cd frontend && npm install && npm run build
+          cd .. && go build -tags desktop,production -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ./build/linux/${BINARY_NAME}
+          upx --best --lzma ./build/linux/${BINARY_NAME}
+
+      - name: Build for Linux Server
+        if: matrix.os == 'ubuntu-22.04'
+        run: |
+          mkdir -p build/linux/server
+          go mod tidy
+          cd server && go build -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ../build/linux/server/${BINARY_NAME}-server
+          cd .. && upx --best --lzma ./build/linux/server/${BINARY_NAME}-server
+
+      - name: Upload shared folder as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: build/
+          retention-days: 1
+
+  release:
+    name: Release Assets
+    runs-on: ubuntu-22.04 
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+      actions: read  # Optional: Allows access to action metadata
+      issues: read   # Optional: Allows interaction with issues (if needed)
+
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download shared folder artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+
+      - name: Set environment variables
+        run: |
+          ls -R .
+          echo "BINARY_NAME=lockenv" >> $GITHUB_ENV
+          echo "EXE_NAME=lockenv.exe" >> $GITHUB_ENV
+
+      - name: Upload Linux Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./linux/lockenv
+          asset_name: lockenv-linux-amd64
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux Server Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./linux/server/lockenv-server
+          asset_name: lockenv-linux-server-amd64
+          asset_content_type: application/octet-stream
