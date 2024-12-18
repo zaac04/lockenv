@@ -1,10 +1,11 @@
 package cmd
 
 import (
-	"locksmith/crypter"
-	"locksmith/file"
-	"locksmith/utilities"
 	"strings"
+
+	"github.com/zaac04/lockenv/crypter"
+	"github.com/zaac04/lockenv/file"
+	"github.com/zaac04/lockenv/utilities"
 
 	"github.com/spf13/cobra"
 )

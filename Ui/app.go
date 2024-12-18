@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	structs "locksmith/Structs"
-	"locksmith/crypter"
-	"locksmith/file"
-	"locksmith/utilities"
+	structs "github.com/zaac04/lockenv/Structs"
+	"github.com/zaac04/lockenv/crypter"
+	"github.com/zaac04/lockenv/file"
+	"github.com/zaac04/lockenv/utilities"
 )
 
 type App struct {

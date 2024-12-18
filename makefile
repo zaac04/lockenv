@@ -11,6 +11,11 @@ endif
 BUILD_NUMBER := $(shell cat $(BUILD_FILE))
 NEW_BUILD_NUMBER := $(shell expr $(BUILD_NUMBER) + 1)
 
+install_dep:
+	go install github.com/wailsapp/wails/v2/cmd/wails@latest
+	sudo apt -y install build-essential libgtk-3-dev libwebkit2gtk-4.0-dev pkg-config
+	sudo apt -y install upx-ucl
+
 update_build_number:
 	@echo $(NEW_BUILD_NUMBER) > $(BUILD_FILE)
 
@@ -19,26 +24,18 @@ show_build_number:
 
 buildLinux:
 	@$(MAKE) clean
-	go build -o ${BINARY_NAME} -tags desktop,production -ldflags "-w -s -X 'locksmith/version.Maintainer=${Maintainer}' -X 'locksmith/version.Version=${Version}' -X 'locksmith/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'locksmith/version.Date=${DATE}'" -o ./build/linux/${BINARY_NAME}
+	go mod tidy
+	cd frontend && npm i && npm run build
+	go build -o ${BINARY_NAME} -tags desktop,production -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ./build/linux/${BINARY_NAME}
 	upx --best --lzma ./build/linux/${BINARY_NAME}
 	@$(MAKE) update_build_number
 	cp ./build/linux/${BINARY_NAME} .
 
 buildWindows:
 	@$(MAKE) clean
-	GOOS=windows GOARCH=amd64 go build -tags desktop,production -ldflags "-w -s -X 'locksmith/version.Maintainer=${Maintainer}' -X 'locksmith/version.Version=${Version}' -X 'locksmith/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'locksmith/version.Date=${DATE}'" -o ./build/windows/${EXE_NAME}
+	GOOS=windows GOARCH=amd64 go build -tags desktop,production -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ./build/windows/${EXE_NAME}
 	upx --best --lzma ./build/windows/${EXE_NAME}
 	@$(MAKE) update_build_number
-	cp ./build/windows/${EXE_NAME} .
-
-Build: 
-	@$(MAKE) clean
-	go build -o ${BINARY_NAME} -tags desktop,production -ldflags "-w -s -X 'locksmith/version.Maintainer=${Maintainer}' -X 'locksmith/version.Version=${Version}' -X 'locksmith/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'locksmith/version.Date=${DATE}'" -o ./build/linux/${BINARY_NAME}
-	upx --best --lzma ./build/linux/${BINARY_NAME}
-	GOOS=windows GOARCH=amd64 go build -tags desktop,production -ldflags "-w -s -X 'locksmith/version.Maintainer=${Maintainer}' -X 'locksmith/version.Version=${Version}' -X 'locksmith/version.BuildNo=${NEW_BUILD_NUMBER}' -X 'locksmith/version.Date=${DATE}'" -o ./build/windows/${EXE_NAME}
-	upx --best --lzma ./build/windows/${EXE_NAME}
-	@$(MAKE) update_build_number
-	cp ./build/linux/${BINARY_NAME} .
 	cp ./build/windows/${EXE_NAME} .
 
 run:

@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"locksmith/crypter"
-	"locksmith/file"
-	"locksmith/utilities"
+	"github.com/zaac04/lockenv/crypter"
+	"github.com/zaac04/lockenv/file"
+	"github.com/zaac04/lockenv/utilities"
 	"time"
 
 	"github.com/manifoldco/promptui"

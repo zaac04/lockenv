@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"locksmith/crypter"
+	"github.com/zaac04/lockenv/crypter"
 
 	"github.com/spf13/cobra"
 )

@@ -3,7 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"locksmith/utilities"
+	"github.com/zaac04/lockenv/utilities"
 	"time"
 
 	"github.com/manifoldco/promptui"

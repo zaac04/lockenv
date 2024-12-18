@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"context"
-	"locksmith/utilities"
-	"locksmith/version"
+	"github.com/zaac04/lockenv/utilities"
+	"github.com/zaac04/lockenv/version"
 	"os"
 	"time"
 

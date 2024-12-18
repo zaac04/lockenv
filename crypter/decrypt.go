@@ -3,8 +3,8 @@ package crypter
 import (
 	"encoding/json"
 	"fmt"
-	"locksmith/file"
-	"locksmith/utilities"
+	"github.com/zaac04/lockenv/file"
+	"github.com/zaac04/lockenv/utilities"
 	"strings"
 )
 

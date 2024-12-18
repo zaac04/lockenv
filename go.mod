@@ -1,4 +1,4 @@
-module locksmith
+module github.com/zaac04/lockenv
 
 go 1.22.0
 

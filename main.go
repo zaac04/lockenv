@@ -2,9 +2,11 @@ package main
 
 import (
 	"embed"
-	ui "locksmith/Ui"
-	"locksmith/cmd"
 	"os"
+
+	"github.com/zaac04/lockenv/cmd"
+
+	ui "github.com/zaac04/lockenv/Ui"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
