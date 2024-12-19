@@ -112,3 +112,13 @@ jobs:
           asset_path: ./linux/server/lockenv-server
           asset_name: lockenv-linux-server-amd64
           asset_content_type: application/octet-stream
+
+      - name: Upload Install Script 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./install.sh
+          asset_name: install.sh
+          asset_content_type: application/octet-stream
