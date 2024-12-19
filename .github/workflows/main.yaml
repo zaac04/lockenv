@@ -48,7 +48,7 @@ jobs:
           mkdir -p build/linux
           go mod tidy
           cd frontend && npm install && npm run build
-          cd .. && CGO_ENABLED=0 GOOS=linux go build -tags desktop,production -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ./build/linux/${BINARY_NAME}
+          cd .. && go build -tags desktop,production -ldflags "-w -s -X 'github.com/zaac04/lockenv/version.Maintainer=${Maintainer}' -X 'github.com/zaac04/lockenv/version.Version=${Version}' -X 'github.com/zaac04/lockenv/version.BuildNo=${BUILD_NUMBER}' -X 'github.com/zaac04/lockenv/version.Date=${DATE}'" -o ./build/linux/${BINARY_NAME}
           upx --best --lzma ./build/linux/${BINARY_NAME}
 
       - name: Build for Linux Server
